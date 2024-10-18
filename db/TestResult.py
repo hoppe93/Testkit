@@ -1,0 +1,76 @@
+
+from datetime import date
+from sqlalchemy import func, Column, DateTime, Float, Integer, String
+from . base import Base
+import helper
+
+from sqlalchemy.sql.expression import delete, insert, select, update
+from . import config
+
+
+class TestResult(Base):
+    
+
+    __tablename__ = 'testresults'
+
+
+    STATUS_RUNNING = 1
+    STATUS_SUCCESS = 2
+    STATUS_FAILURE = 3
+
+
+    # ID of test result
+    id = Column(Integer, primary_key=True)
+    # ID of associated test run
+    testrunid = Column(Integer)
+    # Start time of test
+    starttime = Column(DateTime)
+    # End time of test
+    endtime = Column(DateTime)
+    # Duration in s
+    duration = Column(Float)
+    # Status of test
+    status = Column(Integer)
+    # Report message from the test
+    report = Column(String)
+    # Error message from the test
+    error = Column(String)
+
+
+    def finish(success, duration, report, error='', endtime=None):
+        """
+        Finish this test with the given result.
+        """
+        if endtime is None:
+            endtime = datetime.now()
+
+        s = STATUS_SUCCESS if success else STATUS_FAILURE
+        return TestResult.save(
+            id=self.id,
+            report=report,
+            error=error,
+            endtime=endtime
+        )
+
+
+    @staticmethod
+    def get(id):
+        return helper.get(TestResult, id)
+
+
+    @staticmethod
+    def start(testrunid, starttime=None):
+        """
+        Start a single test module.
+        """
+        if starttime is None:
+            starttime = date.now()
+
+        return TestResult.save(testrunid=testrunid, starttime=starttime, status=STATUS_RUNNING)
+
+
+    @staticmethod
+    def save(id=None, **kwargs):
+        return helper.save(TestResult, id=id, **kwargs)
+
+
