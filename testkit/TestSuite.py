@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import traceback
 import os
+import time
 
 from .Code import Code
 from .TestCase import TestCase
@@ -61,8 +62,11 @@ class TestSuite:
         if commit:
             config['code']['commit'] = commit
 
-        self.code = Code(workdir=self.path, **config['code'])
+        self.code = Code(**config['code'])
+        testlog.info('Building code...')
+        start = time.time()
         self.code.build()
+        testlog.info(f'Finished building code in {time.time()-start:.3f} seconds.')
 
         self.tests = []
         for test in config['tests']:

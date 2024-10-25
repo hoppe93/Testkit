@@ -43,7 +43,10 @@ class Code:
         out, err = p.communicate()
 
         if p.returncode != 0:
-            raise BuildException("The build process exited with a non-zero exit code.\n\n{err}")
+            raise BuildException(
+                f"The build process exited with a non-zero exit code.\n\n{err.decode('utf-8')}",
+                out=out.decode('utf-8'), err=err.decode('utf-8')
+            )
 
 
     def getCommit(self):
