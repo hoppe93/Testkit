@@ -18,7 +18,12 @@ class TestCase:
         """
         Run the test case.
         """
-        return Task(self.exec, testrun=testrun, workdir=workdir, nthreads=nthreads, timeout=timeout)
+        return Task(
+            name=self.name, command=self.exec,
+            checkcmd=self.result, testrun=testrun,
+            workdir=workdir, nthreads=nthreads,
+            timeout=timeout
+        )
 
 
     def getResult(self):

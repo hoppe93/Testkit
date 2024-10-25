@@ -18,6 +18,7 @@ def init(outfile=sys.stdout, errfile=sys.stderr, colors=False):
 
     if type(outfile) == str:
         outlog = open(outfile, 'a')
+        outlog.reconfigure(write_through=True)
         deinit_out = True
 
     if type(errfile) == str:
@@ -25,6 +26,7 @@ def init(outfile=sys.stdout, errfile=sys.stderr, colors=False):
             errlog = outlog
         else:
             errlog = open(errfile, 'a')
+            errlog.reconfigure(write_through=True)
             deinit_err = True
 
 

@@ -6,6 +6,7 @@ import subprocess
 import traceback
 
 from . import testlog
+import db
 
 
 class Task:
@@ -16,10 +17,11 @@ class Task:
     ERROR_CODE = 3
     
 
-    def __init__(self, command, checkcmd, testrun, workdir=None, nthreads=None, timeout=None):
+    def __init__(self, name, command, checkcmd, testrun, workdir=None, nthreads=None, timeout=None):
         """
         Constructor.
         """
+        self.name = name
         self.command = command
         self.checkcmd = checkcmd
         self.testrun = testrun
@@ -77,6 +79,8 @@ class Task:
         """
         Run this task.
         """
+        testlog.info(f"Launching test '{self.name}'")
+
         self.starttime = time.time()
         self.testresult = db.TestResult.start(self.testrun.id)
 
@@ -100,11 +104,13 @@ class Task:
             b = self.process.communicate(timeout=timeout)[1]
             if b is not None:
                 self.stderr_data = b.decode('utf-8')
+            else:
+                self.stderr_data = ''
 
             self.endtime = time.time()
 
             if self.process.returncode != 0:
-                self.errorOnExit = ERROR_CODE
+                self.errorOnExit = self.ERROR_CODE
 
                 self.testresult.finish(
                     False, self.endtime-self.starttime,
@@ -117,7 +123,7 @@ class Task:
         except subprocess.TimeoutExpired:
             if self.timeout and (time.time() - self.starttime > self.timeout):
                 self.process.kill()
-                self.errorOnExit = ERROR_TIMEOUT
+                self.errorOnExit = self.ERROR_TIMEOUT
                 self.endtime = time.time()
                 self.testresult.finish(
                     False, self.endtime-self.starttime,
@@ -126,8 +132,8 @@ class Task:
                 )
                 return True
             return False
-        except KeyboardInterrupt:
-            self.errorOnExit = ERROR_KEYBOARDINTERRUPT
+        except KeyboardInterrupt as ki:
+            self.errorOnExit = self.ERROR_KEYBOARDINTERRUPT
             self.endtime = time.time()
 
             self.testresult.finish(
@@ -135,6 +141,8 @@ class Task:
                 report='Killed by user.',
                 error='Killed by user.'
             )
+
+            raise ki
 
         return True
 
