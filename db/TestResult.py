@@ -2,7 +2,7 @@
 from datetime import date
 from sqlalchemy import func, Column, DateTime, Float, Integer, String
 from . base import Base
-import helper
+from . import helper
 
 from sqlalchemy.sql.expression import delete, insert, select, update
 from . import config
@@ -37,14 +37,14 @@ class TestResult(Base):
     error = Column(String)
 
 
-    def finish(success, duration, report, error='', endtime=None):
+    def finish(self, success, duration, report, error='', endtime=None):
         """
         Finish this test with the given result.
         """
         if endtime is None:
             endtime = datetime.now()
 
-        s = STATUS_SUCCESS if success else STATUS_FAILURE
+        s = self.STATUS_SUCCESS if success else self.STATUS_FAILURE
         return TestResult.save(
             id=self.id,
             report=report,
@@ -64,9 +64,12 @@ class TestResult(Base):
         Start a single test module.
         """
         if starttime is None:
-            starttime = date.now()
+            starttime = datetime.now()
 
-        return TestResult.save(testrunid=testrunid, starttime=starttime, status=STATUS_RUNNING)
+        return TestResult.save(
+            testrunid=testrunid, starttime=starttime,
+            status=TestResult.STATUS_RUNNING
+        )
 
 
     @staticmethod

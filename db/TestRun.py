@@ -1,8 +1,8 @@
 
-from datetime import date
+from datetime import datetime
 from sqlalchemy import func, Column, DateTime, Integer, String
-from . Base import Base
-import helper
+from . base import Base
+from . import helper
 
 from sqlalchemy.sql.expression import delete, insert, select, update
 from . import config
@@ -21,6 +21,8 @@ class TestRun(Base):
 
     # Test-run ID
     id = Column(Integer, primary_key=True)
+    # Name of test suite
+    suitename = Column(String)
     # Start time of test
     starttime = Column(DateTime)
     # End time of test
@@ -38,9 +40,9 @@ class TestRun(Base):
         Finish this test run.
         """
         if endtime is None:
-            endtime = date.now()
+            endtime = datetime.now()
 
-        s = STATUS_SUCCESS if success else STATUS_FAILURE
+        s = self.STATUS_SUCCESS if success else self.STATUS_FAILURE
         return TestRun.save(id=self.id, endtime=endtime, status=s, error=error)
 
 
@@ -59,14 +61,14 @@ class TestRun(Base):
 
 
     @staticmethod
-    def start(commit, starttime=None):
+    def start(suitename, commit, starttime=None):
         """
         Start a test run.
         """
         if starttime is None:
-            starttime = date.now()
+            starttime = datetime.now()
 
-        return TestRun.save(commit=commit, starttime=starttime, status=STATUS_RUNNING)
+        return TestRun.save(suitename=suitename, commit=commit, starttime=starttime, status=TestRun.STATUS_RUNNING)
 
 
     @staticmethod

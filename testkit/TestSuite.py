@@ -3,9 +3,11 @@
 import json
 from pathlib import Path
 import traceback
+import os
 
-from Code import Code
-from TestCase import TestCase
+from .Code import Code
+from .TestCase import TestCase
+from . import testlog
 
 import db
 
@@ -30,7 +32,7 @@ class TestSuite:
         code version.
         """
         commit = self.code.getCommit()
-        return TestRun.getByCommit(commit)
+        return db.TestRun.getByCommit(commit)
 
 
     def loadConfigFile(self, config, branch=None, commit=None):
@@ -59,7 +61,7 @@ class TestSuite:
         if commit:
             config['code']['commit'] = commit
 
-        self.code = Code(**config['code'])
+        self.code = Code(workdir=self.path, **config['code'])
         self.code.build()
 
         self.tests = []
@@ -78,16 +80,18 @@ class TestSuite:
         tasks = []
 
         # Change current working directory
+        testlog.info(f"Chaning working directory to '{self.path}'.")
         os.chdir(self.path)
 
         # Create a database entry
-        tr = db.TestRun.start(self.code.getCommit())
+        testlog.info("Starting the test run.")
+        tr = db.TestRun.start(self.name, self.code.getCommit())
 
         try:
             finished = 0
 
             for test in self.tests:
-                task = test.task(nthreads=nthreads, timeout=timeout)
+                task = test.task(workdir=self.path, nthreads=nthreads, timeout=timeout)
                 queue.append(task)
                 tasks.append(task)
 
@@ -113,6 +117,6 @@ class TestSuite:
             else:
                 tr.finish(success, error='One or more tests failed.')
         except Exception as ex:
-            tr.finish(False, error=traceback.format_exception(e))
+            tr.finish(False, error=''.join(traceback.format_exception(ex)))
 
 

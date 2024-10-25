@@ -7,12 +7,13 @@ from . BuildException import BuildException
 class Code:
     
 
-    def __init__(self, path, buildcmd, branch=None, commit=None, remote='origin'):
+    def __init__(self, path, buildcmd, workdir=None, branch=None, commit=None, remote='origin'):
         """
         Constructor.
         """
+        self.workdir = workdir
         self.path = path
-        self.buildcmd = buildcmd
+        self.buildcmd = buildcmd.format(path=path)
         self.branch = branch
         self.remote = remote
         self.repo = Repo(path)
@@ -38,10 +39,10 @@ class Code:
         Build the code.
         """
         cmd = self.buildcmd.split(' ')
-        s = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=self.workdir)
         out, err = p.communicate()
 
-        if s.returncode != 0:
+        if p.returncode != 0:
             raise BuildException("The build process exited with a non-zero exit code.\n\n{err}")
 
 
@@ -49,7 +50,7 @@ class Code:
         """
         Get the commit number of the code.
         """
-        return self.repo.hexsha
+        return self.repo.head.commit.hexsha
 
 
     def synchronize(self, commit=None):

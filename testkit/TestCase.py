@@ -14,11 +14,11 @@ class TestCase:
         self.result = result
 
 
-    def task(self, testrun, nthreads=None, timeout=None):
+    def task(self, testrun, workdir=None, nthreads=None, timeout=None):
         """
         Run the test case.
         """
-        return Task(self.exec, testrun=testrun, nthreads=nthreads, timeout=timeout)
+        return Task(self.exec, testrun=testrun, workdir=workdir, nthreads=nthreads, timeout=timeout)
 
 
     def getResult(self):

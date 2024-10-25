@@ -3,6 +3,9 @@
 import os
 import time
 import subprocess
+import traceback
+
+from . import testlog
 
 
 class Task:
@@ -13,13 +16,14 @@ class Task:
     ERROR_CODE = 3
     
 
-    def __init__(self, command, checkcmd, testrun, nthreads=None, timeout=None):
+    def __init__(self, command, checkcmd, testrun, workdir=None, nthreads=None, timeout=None):
         """
         Constructor.
         """
         self.command = command
         self.checkcmd = checkcmd
         self.testrun = testrun
+        self.workdir = workdir
         self.nthreads = nthreads
         self.timeout = timeout
 
@@ -43,7 +47,7 @@ class Task:
         # Execute the check command
         try:
             cmd = self.checkcmd.split(' ')
-            p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=self.workdir)
             out, err = p.communicate()
 
             self.testresult.finish(
@@ -63,7 +67,7 @@ class Task:
                 False,
                 self.endtime-self.starttime,
                 report='Error while checking test result.',
-                error=traceback.format_exception(ex)
+                error=''.join(traceback.format_exception(ex))
             )
 
             return False
