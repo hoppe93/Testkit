@@ -1,0 +1,98 @@
+{% extends "main.html" %}
+{% block content %}
+<h2>{{ testrun.suitename }} &#x25B6; test run <a href="/run/{{testrun.id}}">#{{ testrun.id }}</a> &#x25B6; {{ result.name }}</h2>
+
+<div class="test-result">
+	{% if result.status == TestResult.STATUS_RUNNING %}
+	<div class="result-icon">
+		<img src="{{ url_for('static', filename='img/cogs.svg') }}">
+	</div>
+	<span class="result-comment">RUNNING</span>
+	{% elif result.status == TestResult.STATUS_SUCCESS %}
+	<div class="result-icon">
+		<img src="{{ url_for('static', filename='img/success.svg') }}">
+	</div>
+	<span class="result-comment">SUCCESS</span>
+	{% elif result.status == TestResult.STATUS_FAILURE %}
+	<div class="result-icon">
+		<img src="{{ url_for('static', filename='img/error.svg') }}">
+	</div>
+	<span class="result-comment">FAILURE</span>
+	{% elif result.status == TestResult.STATUS_CANCELLED %}
+	<div class="result-icon">
+		<img src="{{ url_for('static', filename='img/skull.svg') }}">
+	</div>
+	<span class="result-comment">CANCELLED</span>
+	{% endif %}
+</div>
+
+<table class="list">
+	<tr>
+		<td colspan="2" class="header">
+			Summary
+		</td>
+	</tr>
+	<tr>
+		<td>ID:</td>
+		<td>#{{ result.id }}</td>
+	</tr>
+	<tr>
+		<td>Name:</td>
+		<td>{{ result.name }}</td>
+	</tr>
+	<tr>
+		<td>Status:</td>
+		<td>
+			{% if result.status == TestResult.STATUS_RUNNING %}
+			RUNNING
+			{% elif result.status == TestResult.STATUS_SUCCESS %}
+			SUCCESS
+			{% elif result.status == TestResult.STATUS_FAILURE %}
+			FAILURE
+			{% elif result.status == TestResult.STATUS_CANCELLED %}
+			CANCELLED
+			{% endif %}
+		</td>
+	</tr>
+	<tr>
+		<td>Code commit:</td>
+		{% if testrun.codeurl %}
+		<td>
+			<a href="{{ testrun.codeurl }}/commit/{{testrun.commit}}" class="commit" target="_blank">{{ testrun.commit }}</a>
+			({{ testrun.codebranch }})
+		</td>
+		{% else %}
+		<td>{{ testrun.commit }} ({{ testrun.codebranch }})</td>
+		{% endif %}
+	</tr>
+	<tr>
+		<td>Start time:</td>
+		<td>{{ result.starttime.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+	</tr>
+	<tr>
+		<td>End time:</td>
+		<td>{{ result.endtime.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+	</tr>
+	<tr>
+		<td>Duration:</td>
+		<td>{{ result.durationf(html=True) | safe }}</td>
+	</tr>
+</table>
+
+<div class="message report">
+	<div class="message-header">Result</div>
+	<div class="message-body">
+		<pre>{{result.report}}</pre>
+	</div>
+</div>
+
+{% if result.error %}
+<div class="message error">
+	<div class="message-header">Error message</div>
+	<div class="message-body">
+		<pre>{{ result.error }}</pre>
+	</div>
+</tr>
+{% endif %}
+
+{% endblock %}

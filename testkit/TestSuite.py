@@ -106,7 +106,10 @@ class TestSuite:
 
         # Create a database entry
         testlog.info("Starting the test run.")
-        tr = db.TestRun.start(self.name, self.code.getCommit())
+        tr = db.TestRun.start(
+            self.name, self.code.getCommit(),
+            codebranch=self.code.branch, codeurl=self.code.url
+        )
 
         try:
             finished = 0
@@ -150,9 +153,11 @@ class TestSuite:
             else:
                 tr.finish(success, error='One or more tests failed.')
         except KeyboardInterrupt:
-            pass
+            tr.cancel(False, error='Test cancelled by user.')
         except Exception as ex:
             testlog.error(f"An error occured while running tests.\n{''.join(traceback.format_exception(ex))}")
-            tr.finish(False, error=''.join(traceback.format_exception(ex)))
+            errmsg = ''.join(traceback.format_exception(ex))
+            tr.finish(False, error=errmsg)
+            tr.finish_running(False, error=errmsg)
 
 

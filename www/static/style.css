@@ -1,0 +1,164 @@
+/* Testkit styles */
+body {
+  font-family: Courier New, monospace;
+  margin: 0;
+  box-sizing: border-box;
+  height: 100%;
+}
+h1 {
+  padding: 0px 0.5em 0px 0.5em;
+}
+table {
+  width: 100%;
+  margin: 2em 0 2em 0;
+  border-collapse: collapse;
+}
+table > thead > tr > th {
+  font-weight: bold;
+  text-align: left;
+  text-decoration: underline;
+}
+table tr:hover {
+  background-color: #DDD;
+}
+table tr:nth-child(even) {
+  background-color: #EEE;
+}
+table tr:nth-child(even):hover {
+  background-color: #DDD;
+}
+table.list {
+  width: calc(100% - 4em);
+  border: 1px solid black;
+  margin: 2em;
+}
+table.list td.header {
+  background-color: #83b0f7;
+  font-weight: bold;
+  border-bottom: 1px solid black;
+}
+table.list tr td:first-child {
+  font-weight: bold;
+  width: 200px;
+  vertical-align: top;
+}
+table.list tr td {
+  padding: 0.3em;
+}
+table.list pre {
+  margin: 0;
+  font-size: 16px;
+}
+.footer {
+  flex-grow: 0;
+  flex-shrink: 0;
+  text-align: center;
+  color: #AAA;
+  padding: 1em 0 1em 0;
+}
+.top-menu {
+  width: calc(100% - 1em);
+  height: 2.5em;
+  border-bottom: 3px solid #EEE;
+  margin-bottom: 1em;
+  padding: 0px 0.5em 0px 0.5em;
+}
+.top-menu a {
+  border: 1px solid black;
+  padding: 0.5em;
+  color: #A00;
+}
+.top-menu a:hover {
+  background-color: #DDD;
+}
+.top-menu .search-control {
+  float: right;
+  margin-right: 1em;
+  width: 20%;
+}
+.top-menu .search-control input[type=text] {
+  display: block;
+  width: calc(100% - 32px - 0.6em);
+  font-family: Courier New, monospace;
+  font-size: 17px;
+  padding: 0.3em;
+  padding-left: 32px;
+  border: 2px solid #BBB;
+  background: transparent url(/static/img/search.svg) no-repeat 13px;
+  background-position: 5px center;
+}
+.top-menu .search-control input[type=text]:focus {
+  outline: none;
+}
+.top-menu .search-control::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+.content {
+  padding: 0px 0.5em 0px 0.5em;
+}
+.content .time-format {
+  color: #A00;
+}
+.content .time-format .day {
+  color: black;
+}
+.content .time-format .hour {
+  color: black;
+}
+.content .time-format .minute {
+  color: black;
+}
+.content .time-format .second {
+  color: black;
+}
+.content img.small-icon {
+  width: 32px;
+  height: 32px;
+  vertical-align: middle;
+}
+.content a {
+  color: #A00;
+}
+.content a.commit {
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+}
+.content .test-result {
+  width: 100%;
+  text-align: center;
+}
+.content .test-result .result-icon img {
+  width: 120px;
+}
+.content .test-result .result-comment {
+  font-weight: bold;
+  font-size: 24px;
+}
+.content .message {
+  margin: 0 2em 0 2em;
+  width: 100%;
+}
+.content .message .message-header {
+  border: 1px solid black;
+  padding: 0.5em;
+  font-weight: bold;
+  width: calc(100% - 5em);
+}
+.content .message.report .message-header {
+  background: #8cde8c;
+}
+.content .message.error .message-header {
+  background: #ff6b6b;
+}
+.content .message .message-body {
+  border: 1px solid black;
+  border-top: none;
+  padding: 1em;
+  width: calc(100% - 6em);
+}
+.content .message .message-body pre {
+  margin: 0;
+  font-size: 18px;
+}

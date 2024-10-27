@@ -54,7 +54,7 @@ class Task:
 
             self.testresult.finish(
                 # Success/failure?
-                (self.returncode==0),
+                (p.returncode==0),
                 # Duration
                 self.endtime-self.starttime,
                 # Report from check program
@@ -63,7 +63,7 @@ class Task:
                 error=err.decode('utf-8')
             )
 
-            return (self.returncode==0)
+            return (p.returncode==0)
         except Exception as ex:
             self.testresult.finish(
                 False,
@@ -82,7 +82,11 @@ class Task:
         testlog.info(f"Launching test '{self.name}'")
 
         self.starttime = time.time()
-        self.testresult = db.TestResult.start(self.testrun.id)
+        self.testresult = db.TestResult.start(
+            self.name, self.testrun.id,
+            command=self.command,
+            checkcommand=self.checkcmd
+        )
 
         if self.process is not None:
             return

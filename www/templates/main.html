@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Testkit Service</title>
+		<link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+	</head>
+	<body>
+		<h1>{{ config['title'] }}</h1>
+		<div class="top-menu">
+			<a href="/">Overview</a>
+			<div class="search-control">
+				<input type="text" placeholder="Search&hellip;">
+			</div>
+			<div style="clear:both"></div>
+		</div>
+
+		<!-- Content -->
+		<div class="content">
+		{% block content %}
+		{% endblock %}
+		</div>
+
+		<div class="footer">
+			Copyright &copy; 2024 the KTH Fast Electron Group
+		</div>
+	</body>
+</html>

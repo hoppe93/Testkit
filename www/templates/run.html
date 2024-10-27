@@ -1,0 +1,128 @@
+{% extends "main.html" %}
+{% block content %}
+<h2>{{ testrun.suitename }} &#x25B6; test run #{{ testrun.id }}</h2>
+
+<div class="test-result">
+	{% if testrun.status == TestRun.STATUS_RUNNING %}
+	<div class="result-icon">
+		<img src="{{ url_for('static', filename='img/cogs.svg') }}">
+	</div>
+	<span class="result-comment">RUNNING</span>
+	{% elif testrun.status == TestRun.STATUS_SUCCESS %}
+	<div class="result-icon">
+		<img src="{{ url_for('static', filename='img/success.svg') }}">
+	</div>
+	<span class="result-comment">SUCCESS</span>
+	{% elif testrun.status == TestRun.STATUS_FAILURE %}
+	<div class="result-icon">
+		<img src="{{ url_for('static', filename='img/error.svg') }}">
+	</div>
+	<span class="result-comment">FAILURE</span>
+	{% elif testrun.status == TestRun.STATUS_CANCELLED %}
+	<div class="result-icon">
+		<img src="{{ url_for('static', filename='img/skull.svg') }}">
+	</div>
+	<span class="result-comment">CANCELLED</span>
+	{% endif %}
+</div>
+
+<table class="list">
+	<tr>
+		<td colspan="2" class="header">
+			Summary
+		</td>
+	</tr>
+	<tr>
+		<td>ID:</td>
+		<td>#{{ testrun.id }}</td>
+	</tr>
+	<tr>
+		<td>Suite name:</td>
+		<td>{{ testrun.suitename }}</td>
+	</tr>
+	<tr>
+		<td>Status:</td>
+		<td>
+			{% if testrun.status == TestRun.STATUS_RUNNING %}
+			RUNNING
+			{% elif testrun.status == TestRun.STATUS_SUCCESS %}
+			SUCCESS
+			{% elif testrun.status == TestRun.STATUS_FAILURE %}
+			FAILURE
+			{% elif testrun.status == TestRun.STATUS_CANCELLED %}
+			CANCELLED
+			{% endif %}
+		</td>
+	</tr>
+	{% if testrun.codeurl %}
+	<tr>
+		<td>Code URL:</td>
+		<td><a href="{{testrun.codeurl}}">{{ testrun.codeurl }}</a></td>
+	</tr>
+	{% endif %}
+	<tr>
+		<td>Code commit:</td>
+		{% if testrun.codeurl %}
+		<td>
+			<a href="{{ testrun.codeurl }}/commit/{{testrun.commit}}" class="commit" target="_blank">{{ testrun.commit }}</a>
+			({{ testrun.codebranch }})
+		</td>
+		{% else %}
+		<td>{{ testrun.commit }} ({{ testrun.codebranch }})</td>
+		{% endif %}
+	</tr>
+	<tr>
+		<td>Start time:</td>
+		<td>{{ testrun.starttime.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+	</tr>
+	<tr>
+		<td>End time:</td>
+		<td>{{ testrun.endtime.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+	</tr>
+	<tr>
+		<td>Duration:</td>
+		<td>{{ testrun.durationf(html=True) | safe }}</td>
+	</tr>
+</table>
+
+{% if testrun.error %}
+<div class="message error">
+	<div class="message-header">Error message</div>
+	<div class="message-body">
+		<pre>{{ testrun.error }}</pre>
+	</div>
+</tr>
+{% endif %}
+
+<table>
+	<thead>
+		<tr>
+			<th>ID</th>
+			<th>Name</th>
+			<th>Status</th>
+			<th>Duration</th>
+		</tr>
+	</thead>
+	<tbody>
+	{% for r in results %}
+		<tr>
+			<td><a href="/result/{{r.id}}">{{ r.id }}</a></td>
+			<td><a href="/result/{{r.id}}">{{ r.name }}</a></td>
+
+			{% if r.status == TestResult.STATUS_RUNNING %}
+			<td><img src="{{ url_for('static', filename='img/cogs.svg') }}" class="small-icon"> <span class="icon-comment">RUNNING</span></td>
+			{% elif r.status == TestResult.STATUS_SUCCESS %}
+			<td><img src="{{ url_for('static', filename='img/success.svg') }}" class="small-icon"> <span class="icon-comment">SUCCESS</span></td>
+			{% elif r.status == TestResult.STATUS_FAILURE %}
+			<td><img src="{{ url_for('static', filename='img/error.svg') }}" class="small-icon"> <span class="icon-comment">FAILURE</span></td>
+			{% elif r.status == TestResult.STATUS_CANCELLED %}
+			<td><img src="{{ url_for('static', filename='img/skull.svg') }}" class="small-icon"> <span class="icon-comment">CANCELLED</span></td>
+			{% endif %}
+
+			<td>{{ r.durationf(html=True) | safe }}</td>
+		</tr>
+	{% endfor %}
+	</tbody>
+</table>
+
+{% endblock %}

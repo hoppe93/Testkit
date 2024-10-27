@@ -2,7 +2,7 @@
 
 from pathlib import Path
 from sqlalchemy import create_engine, select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, scoped_session, sessionmaker
 from datetime import datetime
 from . base import Base
 
@@ -10,7 +10,7 @@ from . base import Base
 class Database:
     
 
-    def __init__(self, filename, echo=False):
+    def __init__(self, filename, echo=False, scoped=False):
         """
         Constructor.
         """
@@ -21,7 +21,10 @@ class Database:
         if initdb:
             Base.metadata.create_all(self.engine)
 
-        self.session = Session(self.engine)
+        if scoped:
+            self.session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=self.engine))
+        else:
+            self.session = Session(self.engine)
 
 
     def exe(self, stmt, commit=False):

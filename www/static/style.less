@@ -1,0 +1,176 @@
+/* Testkit styles */
+
+body {
+	font-family: Courier New, monospace;
+	margin: 0;
+	box-sizing: border-box;
+	height: 100%;
+}
+
+h1 {
+	padding: 0px 0.5em 0px 0.5em;
+}
+
+table {
+	width: 100%;
+	margin: 2em 0 2em 0;
+	border-collapse: collapse;
+
+	&> thead > tr > th {
+		font-weight: bold;
+		text-align: left;
+		text-decoration: underline;
+	}
+
+	tr {
+		&:hover {
+			background-color: #DDD;
+		}
+		&:nth-child(even) {
+			background-color: #EEE;
+
+			&:hover { background-color: #DDD; }
+		}
+	}
+
+	&.list {
+		width: calc( 100% - 4em );
+		border: 1px solid black;
+		margin: 2em;
+	}
+	&.list td.header {
+		background-color: #83b0f7;
+		font-weight: bold;
+		border-bottom: 1px solid black;
+	}
+
+	&.list tr td:first-child {
+		font-weight: bold;
+		width: 200px;
+		vertical-align: top;
+	}
+	&.list tr td {
+		padding: 0.3em;
+	}
+	&.list pre {
+		margin: 0;
+		font-size: 16px;
+	}
+}
+
+.footer {
+	flex-grow: 0;
+	flex-shrink: 0;
+	text-align: center;
+	color: #AAA;
+	padding: 1em 0 1em 0;
+}
+
+.top-menu {
+	width: calc( 100% - 1em );
+	height: 2.5em;
+	border-bottom: 3px solid #EEE;
+	margin-bottom: 1em;
+	padding: 0px 0.5em 0px 0.5em;
+
+	a {
+		border: 1px solid black;
+		padding: 0.5em;
+		color: #A00;
+
+		&:hover {
+			background-color: #DDD;
+		}
+	}
+
+	.search-control {
+		float: right;
+		margin-right: 1em;
+		width: 20%;
+		input[type=text] {
+			display: block;
+			width: calc( 100% - 32px - 0.6em );
+			font-family: Courier New, monospace;
+			font-size: 17px;
+			padding: 0.3em;
+			padding-left: 32px;
+			border: 2px solid #BBB;
+			background: transparent url(/static/img/search.svg) no-repeat 13px;
+			background-position: 5px center;
+			
+			&:focus {
+				outline: none;
+			}
+		}
+
+		&::after {
+			content: "";
+			clear: both;
+			display: table;
+		}
+	}
+}
+
+.content {
+	padding: 0px 0.5em 0px 0.5em;
+
+	.time-format {
+		color: #A00;
+		.day { color: black; }
+		.hour { color: black; }
+		.minute { color: black; }
+		.second { color: black; }
+	}
+
+	img.small-icon {
+		width: 32px;
+		height: 32px;
+		vertical-align: middle;
+	}
+
+	a {
+		color: #A00;
+	}
+	a.commit {
+		text-decoration-line: underline;
+		text-decoration-style: dotted;
+	}
+	
+	.test-result {
+		width: 100%;
+		text-align: center;
+
+		.result-icon img {
+			width: 120px;
+		}
+		.result-comment {
+			font-weight: bold;
+			font-size: 24px;
+		}
+	}
+
+	.message {
+		margin: 0 2em 0 2em;
+		width: 100%;
+
+		.message-header {
+			border: 1px solid black;
+			padding: 0.5em;
+			font-weight: bold;
+			width: calc( 100% - 5em );
+		}
+		&.report .message-header { background: #8cde8c; }
+		&.error .message-header { background: #ff6b6b; }
+		.message-body {
+			border: 1px solid black;
+			border-top: none;
+			padding: 1em;
+			width: calc( 100% - 6em );
+
+			pre {
+				margin: 0;
+				font-size: 18px;
+			}
+		}
+	}
+}

@@ -7,7 +7,10 @@ from . BuildException import BuildException
 class Code:
     
 
-    def __init__(self, path, buildcmd, workdir=None, branch=None, commit=None, remote='origin'):
+    def __init__(
+        self, path, buildcmd, workdir=None, branch=None,
+        commit=None, remote='origin', url=None
+    ):
         """
         Constructor.
         """
@@ -16,6 +19,7 @@ class Code:
         self.buildcmd = buildcmd.format(path=path)
         self.branch = branch
         self.remote = remote
+        self.url = url
         self.repo = Repo(path)
 
         if branch is None:
