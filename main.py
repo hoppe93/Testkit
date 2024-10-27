@@ -26,8 +26,11 @@ def parse_args():
     parser.add_argument('-d', '--database', help="Name of database file to load.", nargs='?', default=str(dbname))
     parser.add_argument('-e', '--error-log', help="Name of log file for error messages.", nargs='?', default='error.log')
     parser.add_argument('-l', '--log-file', help="Name of standard log file.", nargs='?', default='out.log')
+    parser.add_argument('-s', '--stdout', help="Redirect the log files to stdout and stderr.", action='store_true')
+
     parser.add_argument('--force', help="Force run this test suite, even if the current version of the code has been tested before.", action='store_true')
     parser.add_argument('--init', help="Initialize the database instead of running a test.", action='store_true')
+    parser.add_argument('--skip-build', help="Skip building the code.", action='store_true')
 
     parser.add_argument('testconfig', help="Name of configuration file for the test suite to run.", nargs='?', default=None)
 
@@ -38,11 +41,11 @@ def main():
     args = parse_args()
 
     log_file = args.log_file
-    if args.log_file == 'stdout':
+    if args.stdout or args.log_file == 'stdout':
         log_file = sys.stdout
 
     error_log = args.error_log
-    if args.error_log == 'stderr':
+    if args.stdout or args.error_log == 'stderr':
         error_log = sys.stderr
 
     testlog.init(log_file, error_log)
@@ -56,7 +59,8 @@ def main():
 
     try:
         ts = testkit.TestSuite(
-            args.testconfig, branch=args.branch, commit=args.commit
+            args.testconfig, branch=args.branch, commit=args.commit,
+            skipbuild=args.skip_build
         )
 
         runs = ts.getPreviousRuns()
@@ -64,7 +68,7 @@ def main():
         # we just ignore this test.
         if len(runs) > 0:
             status = runs[-1].status
-            statusmsg = ['RUNNING', 'SUCCESS', 'FAILURE'][status]
+            statusmsg = ['', 'RUNNING', 'SUCCESS', 'FAILURE'][status]
             testlog.info(f"Version '{ts.code.getCommit()}' has previously been tested.")
             testlog.info(f"The status of the test was '{statusmsg}'.")
 

@@ -18,14 +18,20 @@ def init(outfile=sys.stdout, errfile=sys.stderr, colors=False):
 
     if type(outfile) == str:
         outlog = open(outfile, 'a')
+        outlog.reconfigure(write_through=True)
         deinit_out = True
+    else:
+        outlog = outfile
 
     if type(errfile) == str:
         if errfile == outfile:
             errlog = outlog
         else:
             errlog = open(errfile, 'a')
+            errlog.reconfigure(write_through=True)
             deinit_err = True
+    else:
+        errlog = errfile
 
 
 def deinit():

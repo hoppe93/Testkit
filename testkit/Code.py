@@ -43,7 +43,10 @@ class Code:
         out, err = p.communicate()
 
         if p.returncode != 0:
-            raise BuildException("The build process exited with a non-zero exit code.\n\n{err}")
+            raise BuildException(
+                f"The build process exited with a non-zero exit code.\n\n{err.decode('utf-8')}",
+                out=out.decode('utf-8'), err=err.decode('utf-8')
+            )
 
 
     def getCommit(self):
@@ -57,17 +60,23 @@ class Code:
         """
         Synchronize the repository to the latest version.
         """
-        remote = None
-        for r in self.repo.remotes:
-            if r.name == self.remote:
-                remote = r
-                break
-
-        if remote is None:
+        if self.remote not in self.repo.remotes:
             raise Exception(f"No remote '{self.remote}' in repository.")
+
+        remote = self.repo.remotes[self.remote]
 
         # Update index
         remote.fetch()
+
+        # Check if selected branch is tracked
+        if self.branch not in self.repo.branches:
+            # Setup new branch and track remote branch
+            if self.branch not in remote.refs:
+                raise Exception(f"No branch named '{self.branch}' on the remote '{remote.name}'.")
+
+            ref = remote.refs[self.branch]
+            self.repo.create_head(self.branch, ref)
+            self.repo.branches[self.branch].set_tracking_branch(ref)
 
         if commit is not None:
             # Find the commit
@@ -85,5 +94,6 @@ class Code:
                 raise Exception(f"No branch '{self.branch}' in repository.")
 
             branch.checkout()
+            remote.pull()
 
 
