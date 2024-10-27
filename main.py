@@ -26,6 +26,7 @@ def parse_args():
     parser.add_argument('-d', '--database', help="Name of database file to load.", nargs='?', default=str(dbname))
     parser.add_argument('-e', '--error-log', help="Name of log file for error messages.", nargs='?', default='error.log')
     parser.add_argument('-l', '--log-file', help="Name of standard log file.", nargs='?', default='out.log')
+    parser.add_argument('-s', '--stdout', help="Redirect the log files to stdout and stderr.", action='store_true')
 
     parser.add_argument('--force', help="Force run this test suite, even if the current version of the code has been tested before.", action='store_true')
     parser.add_argument('--init', help="Initialize the database instead of running a test.", action='store_true')
@@ -40,11 +41,11 @@ def main():
     args = parse_args()
 
     log_file = args.log_file
-    if args.log_file == 'stdout':
+    if args.stdout or args.log_file == 'stdout':
         log_file = sys.stdout
 
     error_log = args.error_log
-    if args.error_log == 'stderr':
+    if args.stdout or args.error_log == 'stderr':
         error_log = sys.stderr
 
     testlog.init(log_file, error_log)

@@ -93,7 +93,7 @@ class Task:
             env['OMP_NUM_THREADS'] = str(self.nthreads)
 
         cmd = self.command.split(' ')
-        self.process = subprocess.Popen(cmd, env=env)
+        self.process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
 
 
     def isFinished(self, timeout=1):

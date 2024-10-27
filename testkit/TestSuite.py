@@ -124,14 +124,26 @@ class TestSuite:
 
                 while len(queue) > 0 and len(active) < self.nprocesses:
                     task = queue.pop(0)
+                    testlog.info(f'Launching task {len(tasks)-len(queue)} of {len(tasks)}.')
                     task.run()
                     active.append(task)
 
             # Check results
+            testlog.info('Checking simulation results.')
             success = True
             for task in tasks:
                 if task.checkResult() != True:
+                    if testlog.use_colors:
+                        testlog.info(f"Result of simulation '{task.name}' is \x1B[1;31mFAILURE\x1B[0m.")
+                    else:
+                        testlog.info(f"Result of simulation '{task.name}' is FAILURE.")
+
                     success = False
+                else:
+                    if testlog.use_colors:
+                        testlog.info(f"Result of simulation '{task.name}' is \x1B[1;32mSUCCESS\x1B[0m.")
+                    else:
+                        testlog.info(f"Result of simulation '{task.name}' is SUCCESS.")
 
             if success:
                 tr.finish(success)
