@@ -59,6 +59,15 @@ class TestResult(Base):
 
 
     @staticmethod
+    def getOfRun(runid):
+        """
+        Return all test results of the specified TestRun.
+        """
+        db = config.database()
+        return db.exe(select(TestResult).where(TestResult.testrunid==runid)).scalars().all()
+
+
+    @staticmethod
     def start(testrunid, starttime=None):
         """
         Start a single test module.
