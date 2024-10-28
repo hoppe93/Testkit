@@ -137,7 +137,7 @@ table.list pre {
   font-size: 24px;
 }
 .content .message {
-  margin: 0 2em 0 2em;
+  margin: 1em 2em 1em 2em;
   width: 100%;
 }
 .content .message .message-header {
