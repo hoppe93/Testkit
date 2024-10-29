@@ -77,7 +77,11 @@
 	</tr>
 	<tr>
 		<td>End time:</td>
+		{% if testrun.endtime %}
 		<td>{{ testrun.endtime.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+		{% else %}
+		<td>n/a</td>
+		{% endif %}
 	</tr>
 	<tr>
 		<td>Duration:</td>
