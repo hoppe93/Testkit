@@ -83,12 +83,14 @@
 	</tr>
 </table>
 
+{% if result.report %}
 <div class="message report">
 	<div class="message-header">Result</div>
 	<div class="message-body">
 		<pre>{{result.report}}</pre>
 	</div>
 </div>
+{% endif %}
 
 {% if result.error %}
 <div class="message error">
