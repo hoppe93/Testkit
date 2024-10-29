@@ -82,7 +82,7 @@ class TestResult(Base):
         Cancel all running tests for the specified test run.
         """
         db = config.database()
-        return db.exe(update(TestResult).values(status=TestResult.STATUS_CANCELLED).where(TestResult.testrunid==testrunid))
+        return db.exe(update(TestResult).values(status=TestResult.STATUS_CANCELLED).where(TestResult.testrunid==runid))
 
 
     @staticmethod
