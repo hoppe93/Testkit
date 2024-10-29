@@ -5,6 +5,8 @@ from pathlib import Path
 import json
 import sys
 
+import textformatter
+
 ROOTPATH = Path(__file__).parent.parent.resolve().absolute()
 sys.path.append(str(ROOTPATH))
 
@@ -51,7 +53,7 @@ def result(result_id):
     return render_template(
         'result.html', config=config,
         TestResult=TestResult, result=result,
-        testrun=testrun
+        testrun=testrun, reportformat=textformatter.reportformat
     )
 
 

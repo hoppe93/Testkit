@@ -87,7 +87,7 @@
 <div class="message report">
 	<div class="message-header">Result</div>
 	<div class="message-body">
-		<pre>{{result.report}}</pre>
+		{{ reportformat(result.report) | safe }}
 	</div>
 </div>
 {% endif %}
@@ -96,7 +96,7 @@
 <div class="message error">
 	<div class="message-header">Error message</div>
 	<div class="message-body">
-		<pre>{{ result.error }}</pre>
+		{{ reportformat(result.error) | safe }}
 	</div>
 </tr>
 {% endif %}
