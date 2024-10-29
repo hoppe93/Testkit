@@ -70,3 +70,17 @@ def run(run_id):
     )
 
 
+@app.post("/search")
+def search():
+    query = request.form['search']
+
+    runs = TestRun.search(query)
+    results = TestResult.search(query)
+
+    return render_template(
+        'search.html', config=config,
+        query=query, testruns=runs, TestRun=TestRun,
+        testresults=results, TestResult=TestResult
+    )
+
+

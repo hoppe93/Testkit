@@ -1,0 +1,14 @@
+{% extends "main.html" %}
+{% import "macros.jinja" as macros %}
+
+{% block content %}
+
+<h2>Search for '{{ query }}'</h2>
+
+<h3>Test runs ({{ testruns | length }} results)</h3>
+{{ macros.table_runs(testruns, TestRun) }}
+
+<h3>Test results ({{ testresults | length }} results)</h3>
+{{ macros.table_results(testresults, TestResult) }}
+
+{% endblock %}

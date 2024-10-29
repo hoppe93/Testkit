@@ -1,0 +1,80 @@
+
+{% macro table_runs(testruns, TestRun) %}
+<table>
+	<thead>
+		<tr>
+			<th>ID</th>
+			<th>Suite</th>
+			<th>Status</th>
+			<th>Duration</th>
+			<th>Code commit</th>
+			<th>Summary</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for tr in testruns %}
+		{% set success, failure = tr.summarize() %}
+		<tr>
+			<td><a href="/run/{{tr.id}}">{{ tr.id }}</a></td>
+			<td><a href="/run/{{tr.id}}">{{ tr.suitename }}</a></td>
+
+			{% if tr.status == TestRun.STATUS_RUNNING %}
+			<td><img src="{{ url_for('static', filename='img/cogs.svg') }}" class="small-icon"> <span class="icon-comment">RUNNING</span></td>
+			{% elif tr.status == TestRun.STATUS_SUCCESS %}
+			<td><img src="{{ url_for('static', filename='img/success.svg') }}" class="small-icon"> <span class="icon-comment">SUCCESS</span></td>
+			{% elif tr.status == TestRun.STATUS_FAILURE %}
+			<td><img src="{{ url_for('static', filename='img/error.svg') }}" class="small-icon"> <span class="icon-comment">FAILURE</span></td>
+			{% elif tr.status == TestRun.STATUS_CANCELLED %}
+			<td><img src="{{ url_for('static', filename='img/skull.svg') }}" class="small-icon"> <span class="icon-comment">CANCELLED</span></td>
+			{% endif %}
+
+			<td>{{ tr.durationf(html=True) | safe }}</td>
+			{% if tr.codeurl %}
+			<td>
+				<a href="{{tr.codeurl}}/commit/{{tr.commit}}" class="commit" target="_blank">{{ tr.commit }}</a>
+				({{ tr.codebranch }})
+			</td>
+			{% else %}
+			<td>{{ tr.commit }} ({{ tr.codebranch }})</td>
+			{% endif %}
+			<td>{{ success }} of {{ success+failure }} tests passed</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+{% endmacro %}
+
+{% macro table_results(results, TestResult) %}
+<table>
+	<thead>
+		<tr>
+			<th>ID</th>
+			<th>Name</th>
+			<th>Status</th>
+			<th>Duration</th>
+		</tr>
+	</thead>
+	<tbody>
+	{% for r in results %}
+		<tr>
+			<td><a href="/result/{{r.id}}">{{ r.id }}</a></td>
+			<td><a href="/result/{{r.id}}">{{ r.name }}</a></td>
+
+			{% if r.status == TestResult.STATUS_RUNNING %}
+			<td><img src="{{ url_for('static', filename='img/cogs.svg') }}" class="small-icon"> <span class="icon-comment">RUNNING</span></td>
+			{% elif r.status == TestResult.STATUS_SUCCESS %}
+			<td><img src="{{ url_for('static', filename='img/success.svg') }}" class="small-icon"> <span class="icon-comment">SUCCESS</span></td>
+			{% elif r.status == TestResult.STATUS_FAILURE %}
+			<td><img src="{{ url_for('static', filename='img/error.svg') }}" class="small-icon"> <span class="icon-comment">FAILURE</span></td>
+			{% elif r.status == TestResult.STATUS_CANCELLED %}
+			<td><img src="{{ url_for('static', filename='img/skull.svg') }}" class="small-icon"> <span class="icon-comment">CANCELLED</span></td>
+			{% endif %}
+
+			<td>{{ r.durationf(html=True) | safe }}</td>
+		</tr>
+	{% endfor %}
+	</tbody>
+</table>
+{% endmacro %}
+

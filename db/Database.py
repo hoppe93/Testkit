@@ -36,6 +36,15 @@ class Database:
         return r
 
 
+    def exe_bound(self, stmt, commit=False, **params):
+        r = self.session.execute(stmt, params=params)
+
+        if commit:
+            self.session.commit()
+
+        return r
+
+
     def flush(self):
         self.session.flush()
         self.session.commit()

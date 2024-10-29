@@ -1,6 +1,6 @@
 
 from datetime import datetime
-from sqlalchemy import func, Column, DateTime, Float, Integer, String
+from sqlalchemy import func, Column, DateTime, Float, Integer, String, or_
 from . base import Base
 from . import helper
 
@@ -113,6 +113,28 @@ class TestResult(Base):
         """
         db = config.database()
         return db.exe(select(TestResult).where(TestResult.testrunid==runid).order_by(TestResult.id)).scalars().all()
+
+
+    @staticmethod
+    def search(q, offset=None, limit=100):
+        """
+        Search for test runs with the given query.
+        """
+        db = config.database()
+        eq = q.replace('%', '%%')
+
+        stmt = select(TestResult).where(or_(
+            TestResult.name.like(f'%{eq}%'),
+            TestResult.command.like(f'%{eq}%'),
+            TestResult.checkcommand.like(f'%{eq}%'),
+            TestResult.report.like(f'%{eq}%'),
+            TestResult.error.like(f'%{eq}%')
+        )).limit(limit)
+
+        if offset:
+            stmt = stmt.offset(offset)
+
+        return db.exe(stmt).scalars().all()
 
 
     @staticmethod
