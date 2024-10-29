@@ -152,7 +152,7 @@ class TestSuite:
             else:
                 tr.finish(success, error='One or more tests failed.')
         except KeyboardInterrupt:
-            tr.cancel(False, error='Test cancelled by user.')
+            tr.cancel(error='Test cancelled by user.')
         except Exception as ex:
             testlog.error(f"An error occured while running tests.\n{''.join(traceback.format_exception(ex))}")
             errmsg = ''.join(traceback.format_exception(ex))
