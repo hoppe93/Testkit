@@ -162,6 +162,15 @@ table.list pre {
   margin: 0;
   font-size: 18px;
 }
+/* Colors */
+.color-error {
+  color: #A00;
+  font-weight: bold;
+}
+.color-success {
+  color: #3A3;
+  font-weight: bold;
+}
 /* Bash colors */
 .bash-0-30 {
   color: black;
