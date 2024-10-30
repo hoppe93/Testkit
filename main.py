@@ -68,11 +68,11 @@ def main():
         # we just ignore this test.
         if len(runs) > 0:
             status = runs[-1].status
-            statusmsg = ['', 'RUNNING', 'SUCCESS', 'FAILURE'][status]
+            statusmsg = ['', 'RUNNING', 'SUCCESS', 'FAILURE', 'CANCELLED'][status]
             testlog.info(f"Version '{ts.code.getCommit()}' has previously been tested.")
             testlog.info(f"The status of the test was '{statusmsg}'.")
 
-            if not args.force:
+            if status != db.TestRun.STATUS_CANCELLED and not args.force:
                 if runs[-1].status in [db.TestRun.STATUS_SUCCESS, db.TestRun.STATUS_RUNNING]:
                     return 0
                 else:
