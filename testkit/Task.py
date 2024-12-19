@@ -75,6 +75,46 @@ class Task:
             return False
 
 
+    def reevaluate(self):
+        """
+        Re-evaluate this test.
+        """
+        tr = db.TestResult.getOfRunWithName(self.testrun.id, self.name)
+
+        if tr is None or len(tr) == 0:
+            return False
+
+        tr = tr[0]
+
+        try:
+            cmd = self.checkcmd.split(' ')
+
+            p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=self.workdir)
+            out, err = p.communicate()
+
+            tr.finish(
+                # Success/failure?
+                (p.returncode==0),
+                # Duration
+                0,
+                # Report from check program
+                report=out.decode('utf-8'),
+                # Error message(s)
+                error=err.decode('utf-8')
+            )
+
+            return (p.returncode==0)
+        except Exception as ex:
+            tr.finish(
+                False,
+                0,
+                report='Error while checking test result.',
+                error=''.join(traceback.format_exception(ex))
+            )
+
+            return False
+
+
     def run(self):
         """
         Run this task.

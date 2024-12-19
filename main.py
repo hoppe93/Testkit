@@ -26,6 +26,7 @@ def parse_args():
     parser.add_argument('-d', '--database', help="Name of database file to load.", nargs='?', default=str(dbname))
     parser.add_argument('-e', '--error-log', help="Name of log file for error messages.", nargs='?', default='error.log')
     parser.add_argument('-l', '--log-file', help="Name of standard log file.", nargs='?', default='out.log')
+    parser.add_argument('-r', '--re-evaluate', help="Only run the evaluation step of the simulations.", action='store_true')
     parser.add_argument('-s', '--stdout', help="Redirect the log files to stdout and stderr.", action='store_true')
 
     parser.add_argument('--force', help="Force run this test suite, even if the current version of the code has been tested before.", action='store_true')
@@ -67,20 +68,24 @@ def main():
         # If this version of the code has already been tested,
         # we just ignore this test.
         if len(runs) > 0:
-            status = runs[-1].status
-            statusmsg = ['', 'RUNNING', 'SUCCESS', 'FAILURE', 'CANCELLED'][status]
-            testlog.info(f"Version '{ts.code.getCommit()}' has previously been tested.")
-            testlog.info(f"The status of the test was '{statusmsg}'.")
-
-            if status != db.TestRun.STATUS_CANCELLED and not args.force:
-                if runs[-1].status in [db.TestRun.STATUS_SUCCESS, db.TestRun.STATUS_RUNNING]:
-                    return 0
-                else:
-                    return 1
+            if args.re_evaluate:
+                ts.run(testrunid=runs[-1].id)
             else:
-                testlog.info(f"Forcing a re-test of the code.")
+                status = runs[-1].status
+                statusmsg = ['', 'RUNNING', 'SUCCESS', 'FAILURE', 'CANCELLED'][status]
+                testlog.info(f"Version '{ts.code.getCommit()}' has previously been tested.")
+                testlog.info(f"The status of the test was '{statusmsg}'.")
 
-        ts.run()
+                if status != db.TestRun.STATUS_CANCELLED and not args.force:
+                    if runs[-1].status in [db.TestRun.STATUS_SUCCESS, db.TestRun.STATUS_RUNNING]:
+                        return 0
+                    else:
+                        return 1
+                else:
+                    testlog.info(f"Forcing a re-test of the code.")
+                    ts.run()
+        else:
+            ts.run()
     except BuildException as ex:
         testlog.error(''.join(traceback.format_exception(ex)))
         print(ex)

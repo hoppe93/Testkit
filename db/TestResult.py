@@ -1,6 +1,6 @@
 
 from datetime import datetime
-from sqlalchemy import func, Column, DateTime, Float, Integer, String, or_
+from sqlalchemy import func, Column, DateTime, Float, Integer, String, and_, or_
 from . base import Base
 from . import helper
 
@@ -113,6 +113,15 @@ class TestResult(Base):
         """
         db = config.database()
         return db.exe(select(TestResult).where(TestResult.testrunid==runid).order_by(TestResult.id)).scalars().all()
+
+
+    @staticmethod
+    def getOfRunWithName(runid, name):
+        """
+        Return all test results with the specified name of the given TestRun.
+        """
+        db = config.database()
+        return db.exe(select(TestResult).where(and_(TestResult.testrunid==runid, TestResult.name==name))).scalars().all()
 
 
     @staticmethod
