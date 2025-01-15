@@ -92,24 +92,33 @@ class TestSuite:
             self.tests.append(TestCase(**test))
 
 
-    def run(self):
+    def run(self, testrunid=None):
         """
         Run all tests.
+
+        If ``testrunid`` is given, do not re-run tests; only
+        re-evaluate the results.
         """
         queue = []
         active = []
         tasks = []
+
+        reevaluate = (testrunid is not None)
 
         # Change current working directory
         testlog.info(f"Changing working directory to '{self.path}'.")
         os.chdir(self.path)
 
         # Create a database entry
-        testlog.info("Starting the test run.")
-        tr = db.TestRun.start(
-            self.name, self.code.getCommit(),
-            codebranch=self.code.branch, codeurl=self.code.url
-        )
+        if reevaluate:
+            tr = db.TestRun.get(testrunid)
+            testlog.info(f"Found TestRun {tr.id}")
+        else:
+            testlog.info("Starting the test run.")
+            tr = db.TestRun.start(
+                self.name, self.code.getCommit(),
+                codebranch=self.code.branch, codeurl=self.code.url
+            )
 
         try:
             finished = 0
@@ -122,12 +131,19 @@ class TestSuite:
             success = True
             while len(queue) > 0 or len(active) > 0:
                 for task in active:
-                    if task.isFinished(0.1):
+                    if reevaluate or task.isFinished(0.1):
+                        testlog.info("Entered")
                         active.remove(task)
                         finished += 1
 
                         # Check result of task
-                        if task.checkResult() != True:
+                        if reevaluate:
+                            testlog.info("Re-evaluating test run")
+                            res = task.reevaluate()
+                        else:
+                            res = task.checkResult()
+
+                        if res != True:
                             if testlog.use_colors:
                                 testlog.info(f"Result of simulation '{task.name}' is \x1B[1;31mFAILURE\x1B[0m.")
                             else:
@@ -140,12 +156,14 @@ class TestSuite:
                             else:
                                 testlog.info(f"Result of simulation '{task.name}' is SUCCESS.")
 
-
                 while len(queue) > 0 and len(active) < self.nprocesses:
                     task = queue.pop(0)
                     testlog.info(f'Launching task {len(tasks)-len(queue)} of {len(tasks)}.')
-                    task.run()
+                    if not reevaluate:
+                        task.run()
                     active.append(task)
+
+            testlog.info("Exited main loop")
 
             if success:
                 tr.finish(success)

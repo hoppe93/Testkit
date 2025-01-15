@@ -1,6 +1,6 @@
 
 from datetime import datetime
-from sqlalchemy import func, Column, DateTime, Float, Integer, String, or_
+from sqlalchemy import func, Column, DateTime, Float, Integer, String, and_, or_
 from . base import Base
 from . import helper
 
