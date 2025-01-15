@@ -116,6 +116,15 @@ class TestResult(Base):
 
 
     @staticmethod
+    def getOfRunWithName(runid, name):
+        """
+        Return all test results with the specified name of the given TestRun.
+        """
+        db = config.database()
+        return db.exe(select(TestResult).where(and_(TestResult.testrunid==runid, TestResult.name==name))).scalars().all()
+
+
+    @staticmethod
     def search(q, offset=None, limit=100):
         """
         Search for test runs with the given query.
