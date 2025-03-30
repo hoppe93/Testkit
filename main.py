@@ -5,6 +5,7 @@
 
 import argparse
 import db
+import json
 import testkit
 import traceback
 from pathlib import Path
@@ -19,11 +20,21 @@ def parse_args():
     """
     parser = argparse.ArgumentParser("Test kit")
 
-    dbname = (Path(__file__).parent / 'testkit.db').resolve().absolute()
+    opts = dict(
+        database=(Path(__file__).parent / 'testkit.db').resolve().absolute()
+    )
+
+    conf = Path(__file__).parent / 'config.json'
+    if conf.exists():
+        with open(conf, 'r') as f:
+            d = json.load(f)
+
+        for opt, val in d.items():
+            opts[opt] = val
 
     parser.add_argument('-b', '--branch', help="Name of git branch to checkout.", nargs='?', default=None)
     parser.add_argument('-c', '--commit', help="Git commit hash to checkout.", nargs='?', default=None)
-    parser.add_argument('-d', '--database', help="Name of database file to load.", nargs='?', default=str(dbname))
+    parser.add_argument('-d', '--database', help="Name of database file to load.", nargs='?', default=str(opts['database']))
     parser.add_argument('-e', '--error-log', help="Name of log file for error messages.", nargs='?', default='error.log')
     parser.add_argument('-l', '--log-file', help="Name of standard log file.", nargs='?', default='out.log')
     parser.add_argument('-r', '--re-evaluate', help="Only run the evaluation step of the simulations.", action='store_true')
