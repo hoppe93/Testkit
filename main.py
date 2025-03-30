@@ -69,6 +69,7 @@ def main():
         testlog.error("No test suite configuration file specified.")
         return 1
 
+    success = True
     try:
         ts = testkit.TestSuite(
             args.testconfig, branch=args.branch, commit=args.commit,
@@ -80,7 +81,7 @@ def main():
         # we just ignore this test.
         if len(runs) > 0:
             if args.re_evaluate:
-                ts.run(testrunid=runs[-1].id)
+                success = ts.run(testrunid=runs[-1].id)
             else:
                 status = runs[-1].status
                 statusmsg = ['', 'RUNNING', 'SUCCESS', 'FAILURE', 'CANCELLED'][status]
@@ -94,19 +95,21 @@ def main():
                         return 1
                 else:
                     testlog.info(f"Forcing a re-test of the code.")
-                    ts.run()
+                    success = ts.run()
         else:
-            ts.run()
+            success = ts.run()
     except BuildException as ex:
         testlog.error(''.join(traceback.format_exception(ex)))
         print(ex)
+        success = False
     except Exception as ex:
         testlog.error(''.join(traceback.format_exception(ex)))
         print(ex)
+        success = False
 
     testlog.deinit()
 
-    return 0
+    return (0 if success else 1)
 
 
 if __name__ == '__main__':
